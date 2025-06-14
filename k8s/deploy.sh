@@ -163,32 +163,12 @@ echo "   kubectl logs -f deployment/backend-deployment -n ecommerce"
 echo "   kubectl logs -f deployment/frontend-deployment -n ecommerce"
 echo "   kubectl describe ingress ecommerce-ingress -n ecommerce"
 
-echo "🗄️ Deploying MongoDB..."
-kubectl apply -f mongodb.yaml
-
-echo "⚙️ Deploying Backend..."
-kubectl apply -f backend.yaml
-
-echo "🌐 Deploying Frontend..."
-kubectl apply -f frontend.yaml
-
-echo "🔗 Creating Ingress..."
-kubectl apply -f ingress.yaml
-
-echo "✅ Deployment complete!"
-
 echo ""
-echo "📋 Checking deployment status..."
-kubectl get pods -n ecommerce
-kubectl get services -n ecommerce
-kubectl get ingress -n ecommerce
-
-echo ""
-echo "📖 To check logs:"
+print_status "📖 To check logs:"
 echo "  kubectl logs -n ecommerce -l app=backend"
 echo "  kubectl logs -n ecommerce -l app=frontend"
 echo "  kubectl logs -n ecommerce -l app=mongodb"
 
 echo ""
-echo "🗑️ To delete everything:"
+print_status "🗑️ To delete everything:"
 echo "  kubectl delete namespace ecommerce"

@@ -67,6 +67,34 @@ $ npm start
 - Run http://localhost:3000/products
 - Click create product and enter product info
 
+## Deploy to Kubernetes
+
+This project includes Kubernetes deployment configuration for cloud deployment.
+
+### 1. Deploy the Application
+
+```bash
+# Deploy all components
+cd k8s
+./deploy.sh
+```
+
+### 2. Access the Application
+
+After deployment, access the application through:
+- NodePort: `http://<node-ip>:30500/api/products`
+- Ingress: `https://your-domain.com` (if configured)
+
+### 3. Add Products
+
+If products are missing after deployment:
+```bash
+cd k8s
+./populate-products.sh
+```
+
+For detailed Kubernetes deployment instructions, see [k8s/README.md](k8s/README.md).
+
 ## Support
 
 - Q/A: https://webacademy.pro/oldamazona

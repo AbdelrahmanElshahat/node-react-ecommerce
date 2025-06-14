@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import axios from 'axios';
+import api from '../api';
 import {
   saveProduct,
   listProducts,
@@ -55,14 +55,14 @@ function ProductsScreen(props) {
 
   const openModal = (product) => {
     setModalVisible(true);
-    setId(product._id);
-    setName(product.name);
-    setPrice(product.price);
-    setDescription(product.description);
-    setImage(product.image);
-    setBrand(product.brand);
-    setCategory(product.category);
-    setCountInStock(product.countInStock);
+    setId(product._id || '');
+    setName(product.name || '');
+    setPrice(product.price || '');
+    setDescription(product.description || '');
+    setImage(product.image || '/images/p1.jpg'); // Default image for new products
+    setBrand(product.brand || '');
+    setCategory(product.category || '');
+    setCountInStock(product.countInStock || '');
   };
 
   const submitHandler = (e) => {
@@ -112,7 +112,7 @@ function ProductsScreen(props) {
       let endpoint = '/api/uploads/s3';
       
       try {
-        const { data } = await axios.post(endpoint, bodyFormData, {
+        const { data } = await api.post(endpoint, bodyFormData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${userInfo.token}`,
@@ -125,7 +125,7 @@ function ProductsScreen(props) {
         console.log('S3 upload failed, trying local upload:', s3Error.response?.data?.message);
         
         // Fallback to local upload
-        const { data } = await axios.post('/api/uploads', bodyFormData, {
+        const { data } = await api.post('/api/uploads', bodyFormData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${userInfo.token}`,

@@ -23,8 +23,9 @@ import {
   orderDeleteReducer,
 } from './reducers/orderReducers';
 
-const cartItems = Cookie.getJSON('cartItems') || [];
-const userInfo = Cookie.getJSON('userInfo') || null;
+// Updated to use Cookie.get() and JSON.parse for js-cookie v3
+const cartItems = Cookie.get('cartItems') ? JSON.parse(Cookie.get('cartItems')) : [];
+const userInfo = Cookie.get('userInfo') ? JSON.parse(Cookie.get('userInfo')) : null;
 
 // Ensure cartItems is always an array
 const safeCartItems = Array.isArray(cartItems) ? cartItems : [];

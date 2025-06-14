@@ -19,7 +19,7 @@ spec:
       - name: dockerhub-secret
       containers:
       - name: frontend
-        image: elshahat20/my-app:itiFront-0.1.1  # Replace with your Docker Hub image
+        image: elshahat20/my-app:itiFront-0.1.3  # Updated with fixed nginx.conf
         ports:
         - containerPort: 3000
         env:

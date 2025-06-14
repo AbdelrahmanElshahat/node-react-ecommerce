@@ -21,12 +21,47 @@ metadata:
     # Security and performance
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
     nginx.ingress.kubernetes.io/proxy-buffer-size: "8k"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # Add configuration to handle both domain and IP access
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      if ($host = 'amazona.com') {
+        set $redirect_to_https "true";
+      }
+      if ($redirect_to_https = 'true') {
+        return 301 https://$host$request_uri;
+      }
 spec:
   ingressClassName: nginx
   rules:
-  - host: Amazona.com  # Replace with your actual domain
+  - host: amazona.com  # Domain has been updated
     http:
+      paths:
+      # API routes - must come first for proper matching
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 5000
+      # Static uploads path
+      - path: /uploads
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 5000
+      # Frontend routes - catch-all for SPA routing
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service
+            port:
+              number: 80
+  # Add a rule for IP-based access (no host specified)
+  - http:
       paths:
       # API routes - must come first for proper matching
       - path: /api
@@ -55,5 +90,5 @@ spec:
   # TLS/SSL configuration with Let's Encrypt
   tls:
   - hosts:
-    - Amazona.com  # Replace with your actual domain
+    - amazona.com
     secretName: ecommerce-tls-secret

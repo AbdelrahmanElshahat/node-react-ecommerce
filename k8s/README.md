@@ -24,6 +24,7 @@ This folder contains all essential Kubernetes manifest files and scripts for dep
 - **`update-manifests.sh`** - Update manifests with image URLs
 - **`test-ingress.sh`** - Test and validate deployment
 - **`cleanup.sh`** - Remove all deployed resources
+- **`populate-products.sh`** - Add sample products to the MongoDB database
 
 ## 🚀 Quick Deployment
 
@@ -107,6 +108,27 @@ kubectl scale deployment frontend-deployment --replicas=3 -n ecommerce
 ./test-ingress.sh
 ```
 
+### Populate Products
+If your application is missing products, you can use the provided script to add sample products:
+
+```bash
+# Add sample products to the database
+./populate-products.sh
+```
+
+### Alternative Access Methods
+In addition to the Ingress, you can access the backend API directly using NodePort:
+
+```bash
+# Create a NodePort service for direct backend access
+kubectl apply -f backend-nodeport.yaml
+
+# Find the NodePort IP and port
+kubectl get svc -n ecommerce backend-nodeport
+NODE_IP=$(kubectl get nodes -o wide | grep -v NAME | awk '{print $7}' | head -1)
+echo "Access backend directly at: http://$NODE_IP:30500/api/products"
+```
+
 ### Manual Testing
 ```bash
 # Check LoadBalancer IP
@@ -166,3 +188,4 @@ For detailed deployment instructions, see the main [KUBERNETES-DEPLOYMENT-GUIDE.
 - **Health Checks**: Backend includes liveness and readiness probes at `/api/health`
 - **Security**: Sensitive data (AWS credentials, MongoDB passwords) stored in Secrets
 - **File Uploads**: Supports both local storage and AWS S3 via `/uploads` path
+- **Products**: If products are missing, run `./populate-products.sh` to add sample products

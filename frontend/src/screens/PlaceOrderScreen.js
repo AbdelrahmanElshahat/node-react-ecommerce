@@ -10,11 +10,8 @@ function PlaceOrderScreen(props) {
   const { loading, success, error, order } = orderCreate;
 
   const { cartItems, shipping, payment } = cart;
-  if (!shipping.address) {
-    props.history.push("/shipping");
-  } else if (!payment.paymentMethod) {
-    props.history.push("/payment");
-  }
+  
+  // Calculate prices
   const itemsPrice = cartItems.reduce((a, c) => a + c.price * c.qty, 0);
   const shippingPrice = itemsPrice > 100 ? 0 : 10;
   const taxPrice = 0.15 * itemsPrice;
@@ -29,12 +26,21 @@ function PlaceOrderScreen(props) {
       taxPrice, totalPrice
     }));
   }
+  
+  useEffect(() => {
+    // Navigation logic should be in useEffect to prevent runtime errors
+    if (!shipping || !shipping.address) {
+      props.history.push("/shipping");
+    } else if (!payment || !payment.paymentMethod) {
+      props.history.push("/payment");
+    }
+  }, [shipping, payment, props.history]);
+  
   useEffect(() => {
     if (success) {
       props.history.push("/order/" + order._id);
     }
-
-  }, [success]);
+  }, [success, props.history, order]);
 
   return <div>
     <CheckoutSteps step1 step2 step3 step4 ></CheckoutSteps>
@@ -45,14 +51,17 @@ function PlaceOrderScreen(props) {
             Shipping
           </h3>
           <div>
-            {cart.shipping.address}, {cart.shipping.city},
-          {cart.shipping.postalCode}, {cart.shipping.country},
+            {cart.shipping && cart.shipping.address ? (
+              `${cart.shipping.address}, ${cart.shipping.city}, ${cart.shipping.postalCode}, ${cart.shipping.country}`
+            ) : (
+              'No shipping information'
+            )}
           </div>
         </div>
         <div>
           <h3>Payment</h3>
           <div>
-            Payment Method: {cart.payment.paymentMethod}
+            Payment Method: {cart.payment && cart.payment.paymentMethod ? cart.payment.paymentMethod : 'No payment method selected'}
           </div>
         </div>
         <div>
@@ -72,7 +81,7 @@ function PlaceOrderScreen(props) {
           </div>
                 :
                 cartItems.map(item =>
-                  <li>
+                  <li key={item.product}>
                     <div className="cart-image">
                       <img src={item.image} alt="product" />
                     </div>

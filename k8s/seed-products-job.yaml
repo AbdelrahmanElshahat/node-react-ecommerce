@@ -1,0 +1,47 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: seed-products-job
+  namespace: amazona
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: seed-products
+        image: elshahat/amazona-backend:latest
+        command: ["npm", "run", "seed-prod"]
+        env:
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: amazona-secret
+              key: MONGODB_URI
+        - name: NODE_ENV
+          value: "production"
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: amazona-secret
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: amazona-secret
+              key: AWS_SECRET_ACCESS_KEY
+        - name: AWS_REGION
+          valueFrom:
+            secretKeyRef:
+              name: amazona-secret
+              key: AWS_REGION
+        - name: AWS_BUCKET_NAME
+          valueFrom:
+            secretKeyRef:
+              name: amazona-secret
+              key: AWS_BUCKET_NAME
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: amazona-secret
+              key: JWT_SECRET
+      backoffLimit: 3

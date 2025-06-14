@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-fix-script
+  namespace: ecommerce
+data:
+  fix-frontend.sh: |
+    #!/bin/bash
+    echo "Creating directory structure for frontend build..."
+    mkdir -p /app/frontend/build
+    echo "Copying frontend build files from /usr/share/nginx/html to /app/frontend/build..."
+    cp -r /usr/share/nginx/html/* /app/frontend/build/
+    echo "Build directory structure created."
+    ls -la /app/frontend/build

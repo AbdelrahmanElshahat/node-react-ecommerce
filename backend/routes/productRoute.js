@@ -1,19 +1,29 @@
 import express from 'express';
-import aws from 'aws-sdk';
+import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import fs from 'fs';
+import path from 'path';
 import Product from '../models/productModel.js';
 import { isAuth, isAdmin } from '../util.js';
 import config from '../config.js';
 
 const router = express.Router();
 
-// Configure AWS S3
-aws.config.update({
-  accessKeyId: config.accessKeyId,
-  secretAccessKey: config.secretAccessKey,
-  region: config.region,
-});
+// Configure AWS S3 (only if credentials are available)
+const isS3Configured = config.accessKeyId && config.secretAccessKey && config.bucketName;
+let s3Client = null;
 
-const s3 = new aws.S3();
+if (isS3Configured) {
+  s3Client = new S3Client({
+    credentials: {
+      accessKeyId: config.accessKeyId,
+      secretAccessKey: config.secretAccessKey,
+    },
+    region: config.region
+  });
+  console.log('✅ S3 client configured for product route');
+} else {
+  console.log('⚠️ S3 not configured. Using local file deletion only.');
+}
 
 // Helper function to extract S3 key from URL
 const extractS3KeyFromUrl = (imageUrl) => {
@@ -26,20 +36,53 @@ const extractS3KeyFromUrl = (imageUrl) => {
     const urlParts = imageUrl.split('/');
     if (imageUrl.includes(`${config.bucketName}.s3`)) {
       // bucket-name.s3.region.amazonaws.com/key
-      return urlParts.slice(3).join('/');
+      // The key is everything after the domain
+      const key = urlParts.slice(3).join('/');
+      console.log(`Extracted S3 key from bucket subdomain URL: ${key}`);
+      return key;
     } else if (imageUrl.includes('s3.') && imageUrl.includes(`/${config.bucketName}/`)) {
       // s3.region.amazonaws.com/bucket-name/key
       const bucketIndex = urlParts.indexOf(config.bucketName);
-      return urlParts.slice(bucketIndex + 1).join('/');
+      const key = urlParts.slice(bucketIndex + 1).join('/');
+      console.log(`Extracted S3 key from path-style URL: ${key}`);
+      return key;
     }
   }
 
+  console.log(`Could not extract S3 key from URL: ${imageUrl}`);
   return null;
+};
+
+// Helper function to delete local image file
+const deleteLocalImage = async (imageUrl) => {
+  if (!imageUrl) return { success: false, message: 'No image URL provided' };
+
+  try {
+    // Check if this is a local file (starts with /uploads/)
+    if (imageUrl.startsWith('/uploads/')) {
+      const filePath = path.join(process.cwd(), imageUrl);
+      
+      // Check if file exists
+      if (fs.existsSync(filePath)) {
+        await fs.promises.unlink(filePath);
+        console.log(`Successfully deleted local image: ${filePath}`);
+        return { success: true, message: 'Local image deleted successfully' };
+      } else {
+        return { success: false, message: 'Local image file not found' };
+      }
+    }
+    
+    return { success: false, message: 'Not a local image URL' };
+  } catch (error) {
+    console.error('Error deleting local image:', error);
+    return { success: false, message: error.message };
+  }
 };
 
 // Helper function to delete image from S3
 const deleteImageFromS3 = async (imageUrl) => {
   if (!imageUrl) return { success: false, message: 'No image URL provided' };
+  if (!isS3Configured) return { success: false, message: 'S3 not configured' };
 
   try {
     const s3Key = extractS3KeyFromUrl(imageUrl);
@@ -48,18 +91,40 @@ const deleteImageFromS3 = async (imageUrl) => {
       return { success: false, message: 'Unable to extract S3 key from URL' };
     }
 
-    const params = {
+    const command = new DeleteObjectCommand({
       Bucket: config.bucketName,
       Key: s3Key,
-    };
+    });
 
-    await s3.deleteObject(params).promise();
+    await s3Client.send(command);
     console.log(`Successfully deleted image from S3: ${s3Key}`);
     return { success: true, message: 'Image deleted from S3' };
   } catch (error) {
     console.error('Error deleting image from S3:', error);
     return { success: false, message: error.message };
   }
+};
+
+// Unified function to delete image (tries both S3 and local)
+const deleteImage = async (imageUrl) => {
+  if (!imageUrl) return { success: false, message: 'No image URL provided' };
+
+  // Try S3 first if it's an S3 URL
+  if (imageUrl.includes('amazonaws.com') && isS3Configured) {
+    const s3Result = await deleteImageFromS3(imageUrl);
+    if (s3Result.success) {
+      return s3Result;
+    }
+  }
+
+  // Try local deletion if it's a local URL
+  if (imageUrl.startsWith('/uploads/')) {
+    return await deleteLocalImage(imageUrl);
+  }
+
+  // If it doesn't match any pattern, log and return
+  console.log(`Image URL doesn't match any deletion pattern: ${imageUrl}`);
+  return { success: false, message: 'Image URL format not recognized for deletion' };
 };
 
 router.get('/', async (req, res) => {
@@ -138,9 +203,9 @@ router.put('/:id', isAuth, isAdmin, async (req, res) => {
     const updatedProduct = await product.save();
 
     if (updatedProduct) {
-      // Delete old image from S3 if image was changed
-      if (oldImageUrl && newImageUrl && oldImageUrl !== newImageUrl) {
-        const deleteResult = await deleteImageFromS3(oldImageUrl);
+      // Delete old image from storage if image was changed and not a default image
+      if (oldImageUrl && newImageUrl && oldImageUrl !== newImageUrl && !oldImageUrl.startsWith('/images/')) {
+        const deleteResult = await deleteImage(oldImageUrl);
         console.log('Old image deletion result:', deleteResult);
       }
 
@@ -152,7 +217,7 @@ router.put('/:id', isAuth, isAdmin, async (req, res) => {
   return res.status(500).send({ message: ' Error in Updating Product.' });
 });
 
-// Updated delete route with S3 image deletion
+// Updated delete route with unified image deletion (S3 + local)
 router.delete('/:id', isAuth, isAdmin, async (req, res) => {
   try {
     // First, find the product to get the image URL
@@ -165,27 +230,27 @@ router.delete('/:id', isAuth, isAdmin, async (req, res) => {
     // Store image URL before deletion
     const imageUrl = productToDelete.image;
 
-    // Delete the product from database
+    // Delete the product from database first
     const deletedProduct = await Product.findByIdAndDelete(req.params.id);
 
     if (deletedProduct) {
-      // Delete associated image from S3
-      if (imageUrl) {
-        const s3DeleteResult = await deleteImageFromS3(imageUrl);
+      // Delete associated image from storage (S3 or local)
+      if (imageUrl && !imageUrl.startsWith('/images/')) { // Don't delete default images
+        const imageDeleteResult = await deleteImage(imageUrl);
 
-        if (s3DeleteResult.success) {
+        if (imageDeleteResult.success) {
           res.send({
             message: 'Product and associated image deleted successfully',
-            s3Result: s3DeleteResult.message,
+            imageResult: imageDeleteResult.message,
           });
         } else {
           res.send({
-            message: 'Product deleted, but failed to delete image from S3',
-            s3Error: s3DeleteResult.message,
+            message: 'Product deleted, but failed to delete image',
+            imageError: imageDeleteResult.message,
           });
         }
       } else {
-        res.send({ message: 'Product deleted (no image to remove)' });
+        res.send({ message: 'Product deleted (no custom image to remove)' });
       }
     } else {
       res.status(404).send({ message: 'Product Not Found.' });
@@ -200,7 +265,7 @@ router.post('/', isAuth, isAdmin, async (req, res) => {
     const product = new Product({
       name: req.body.name,
       price: req.body.price,
-      image: req.body.image,
+      image: req.body.image || '/images/p1.jpg', // Provide default image if none provided
       brand: req.body.brand,
       category: req.body.category,
       countInStock: req.body.countInStock,

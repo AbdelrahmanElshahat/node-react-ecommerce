@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import config from './config';
 import userRoute from './routes/userRoute';
 import productRoute from './routes/productRoute';
@@ -21,6 +22,7 @@ mongoose
   .catch((error) => console.log('mongodb connection error:', error.message));
 
 const app = express();
+app.use(cors());
 app.use(bodyParser.json());
 
 // Health check endpoint for Kubernetes

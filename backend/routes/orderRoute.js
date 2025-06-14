@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import Order from '../models/orderModel';
 import { isAuth, isAdmin } from '../util';
 
@@ -14,21 +15,41 @@ router.get("/mine", isAuth, async (req, res) => {
 });
 
 router.get("/:id", isAuth, async (req, res) => {
-  const order = await Order.findOne({ _id: req.params.id });
-  if (order) {
-    res.send(order);
-  } else {
-    res.status(404).send("Order Not Found.")
+  try {
+    // Validate if the id is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).send("Invalid order ID format.");
+    }
+    
+    const order = await Order.findOne({ _id: req.params.id });
+    if (order) {
+      res.send(order);
+    } else {
+      res.status(404).send("Order Not Found.")
+    }
+  } catch (error) {
+    console.error('Error fetching order:', error);
+    res.status(500).send("Internal server error.");
   }
 });
 
 router.delete("/:id", isAuth, isAdmin, async (req, res) => {
-  const order = await Order.findOne({ _id: req.params.id });
-  if (order) {
-    const deletedOrder = await order.remove();
-    res.send(deletedOrder);
-  } else {
-    res.status(404).send("Order Not Found.")
+  try {
+    // Validate if the id is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).send("Invalid order ID format.");
+    }
+    
+    const order = await Order.findOne({ _id: req.params.id });
+    if (order) {
+      const deletedOrder = await order.remove();
+      res.send(deletedOrder);
+    } else {
+      res.status(404).send("Order Not Found.")
+    }
+  } catch (error) {
+    console.error('Error deleting order:', error);
+    res.status(500).send("Internal server error.");
   }
 });
 
