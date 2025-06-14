@@ -3,11 +3,16 @@
 # This script creates a direct IP access version of the ingress
 # for testing and sharing with others without DNS configuration
 
-INGRESS_IP=$(kubectl get ingress -n ecommerce ecommerce-ingress -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+INGRESS_IP=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 
 if [ -z "$INGRESS_IP" ]; then
     echo "❌ Could not find ingress IP address!"
-    exit 1
+    echo "Trying alternative method..."
+    INGRESS_IP=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+    if [ -z "$INGRESS_IP" ]; then
+        echo "❌ Could not find ingress IP or hostname!"
+        exit 1
+    fi
 fi
 
 echo "✅ Found ingress IP: $INGRESS_IP"
