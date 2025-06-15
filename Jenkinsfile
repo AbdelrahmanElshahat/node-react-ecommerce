@@ -112,9 +112,9 @@ pipeline{
                                 mkdir -p /tmp/trivy
                                 cd /tmp/trivy
                                 
-                                # Download and extract Trivy binary
-                                wget -q https://github.com/aquasecurity/trivy/releases/download/v0.48.3/trivy_0.48.3_Linux-64bit.tar.gz
-                                tar xzf trivy_0.48.3_Linux-64bit.tar.gz
+                                # Download and extract Trivy binary using curl
+                                curl -fsSL -o trivy.tar.gz https://github.com/aquasecurity/trivy/releases/download/v0.48.3/trivy_0.48.3_Linux-64bit.tar.gz
+                                tar xzf trivy.tar.gz
                                 chmod +x trivy
                                 
                                 # Add to PATH for this session
@@ -154,9 +154,9 @@ pipeline{
                                 mkdir -p /tmp/trivy
                                 cd /tmp/trivy
                                 
-                                # Download and extract Trivy binary
-                                wget -q https://github.com/aquasecurity/trivy/releases/download/v0.48.3/trivy_0.48.3_Linux-64bit.tar.gz
-                                tar xzf trivy_0.48.3_Linux-64bit.tar.gz
+                                # Download and extract Trivy binary using curl
+                                curl -fsSL -o trivy.tar.gz https://github.com/aquasecurity/trivy/releases/download/v0.48.3/trivy_0.48.3_Linux-64bit.tar.gz
+                                tar xzf trivy.tar.gz
                                 chmod +x trivy
                                 
                                 # Add to PATH for this session
