@@ -135,8 +135,9 @@ pipeline{
             steps{
                 echo "========executing update k8s manifest stage========"
                 script {
+                    def version
                     dir('backend'){
-                        def version = getVersionFromPackageJson()
+                        version = getVersionFromPackageJson()
                     }
                     dir('k8s') {
                         sh """
@@ -155,8 +156,9 @@ pipeline{
             steps{
                 echo "========executing update k8s manifest stage========"
                 script {
+                    def version
                     dir('frontend'){
-                        def version = getVersionFromPackageJson()
+                        version = getVersionFromPackageJson()
                     }
                     dir('k8s') {
                         sh """
