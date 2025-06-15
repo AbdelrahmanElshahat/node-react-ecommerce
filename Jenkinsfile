@@ -127,7 +127,6 @@ pipeline{
             }
         }
         stage("update backend k8s manifest"){
-            def version
             when {
                 anyOf {
                     environment name: 'BUILD_BACKEND', value: 'true'
@@ -137,7 +136,7 @@ pipeline{
                 echo "========executing update k8s manifest stage========"
                 dir('backend'){
                     script {
-                        version = getVersionFromPackageJson()
+                        def version = getVersionFromPackageJson()
                     }
                 }
                 script {
@@ -150,7 +149,6 @@ pipeline{
             }
         }
         stage("update frontend k8s manifest"){
-            def version
             when {
                 anyOf {
                     environment name: 'BUILD_FRONTEND', value: 'true'
@@ -160,7 +158,7 @@ pipeline{
                 echo "========executing update k8s manifest stage========"
                 dir('frontend'){
                     script {
-                        version = getVersionFromPackageJson()
+                        def version = getVersionFromPackageJson()
                     }
                 }
                 script {
