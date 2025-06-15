@@ -15,11 +15,9 @@ spec:
       labels:
         app: frontend
     spec:
-      imagePullSecrets:
-      - name: dockerhub-secret
       containers:
       - name: frontend
-        image: elshahat20/my-app:itiFront-0.1.1
+        image: public.ecr.aws/w2s7s2g7/iti-project-frontend:0.1.2
         ports:
         - containerPort: 80
         env:
