@@ -7,7 +7,7 @@ function PlaceOrderScreen(props) {
 
   const cart = useSelector(state => state.cart);
   const orderCreate = useSelector(state => state.orderCreate);
-  const { loading, success, error, order } = orderCreate;
+  const { success, order } = orderCreate;
 
   const { cartItems, shipping, payment } = cart;
   

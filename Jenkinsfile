@@ -13,6 +13,7 @@ pipeline{
     }
     environment {
        DISCORD_WEBHOOK_URL = credentials('discord')
+       CI = 'false'
     }
     stages{
         stage("Detect Changes"){
@@ -29,6 +30,9 @@ pipeline{
                 anyOf {
                     environment name: 'BUILD_FRONTEND', value: 'true'
                 }
+            }
+            environment {
+                CI = 'false'
             }
             steps{
                 script {
@@ -75,6 +79,9 @@ pipeline{
                 anyOf {
                     environment name: 'BUILD_FRONTEND', value: 'true'
                 }
+            }
+            environment {
+                CI = 'false'
             }
             steps{
                 echo "========executing build frontend image stage========"

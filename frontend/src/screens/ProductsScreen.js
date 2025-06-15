@@ -21,7 +21,7 @@ function ProductsScreen(props) {
   const [uploadError, setUploadError] = useState('');
 
   const productList = useSelector((state) => state.productList);
-  const { loading, products, error } = productList;
+  const { products } = productList;
 
   const productSave = useSelector((state) => state.productSave);
   const {
