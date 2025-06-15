@@ -1,0 +1,88 @@
+---
+    - name: Install Java (Jenkins dependency)
+      yum:
+        name: java-17-amazon-corretto
+        state: present
+
+    - name: Import Jenkins GPG key
+      ansible.builtin.command: rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+
+    - name: Add Jenkins repo
+      get_url:
+        url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+        dest: /etc/yum.repos.d/jenkins.repo
+
+    - name: Import Jenkins key
+      rpm_key:
+        key: https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+        state: present
+
+    - name: Install Jenkins
+      yum:
+        name: jenkins
+        state: present
+
+    - name: Start and enable Jenkins
+      systemd:
+        name: jenkins
+        enabled: yes
+        state: started
+
+    - name: read admin pwd
+      shell: cat /var/lib/jenkins/secrets/initialAdminPassword
+      register: secretpwd
+
+
+    - name: unlock and add admin user
+      jenkins_script:
+        script: |
+          import jenkins.model.*
+          import hudson.security.*
+          def instance = Jenkins.getInstance()
+          def hudsonRealm = new HudsonPrivateSecurityRealm(false)
+          hudsonRealm.createAccount('Jenkins', '${user_pwd}')
+          instance.setSecurityRealm(hudsonRealm)
+          def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
+          strategy.setAllowAnonymousRead(false)
+          instance.setAuthorizationStrategy(strategy)
+          instance.save()
+        args:
+          user_pwd: admin
+        user: admin
+        password: "{{ secretpwd.stdout }}"
+
+    - name: complete setup wizard
+      jenkins_script:
+        script: |
+          import static jenkins.model.Jenkins.instance as jenkins
+          import jenkins.install.InstallState
+          if (!jenkins.installState.isSetupComplete()) {
+            InstallState.INITIAL_SETUP_COMPLETED.initializeState()
+          }
+        user: admin
+        password: "{{ secretpwd.stdout }}"
+
+    - name: install plugin
+      jenkins_plugin:
+        name: "{{ item }}"
+        state: latest
+        url_username: admin
+        url_password: "{{ secretpwd.stdout }}"
+      with_items:
+        - git
+        - pipeline
+        - github
+        - docker-plugin
+        - slack
+        - ssh-agent
+        - credentials-binding
+        - docker-workflow
+        - aws-credentials  # Additional AWS Credentials Plugin
+        - multibranch-scan-webhook-trigger
+        - multibranch-build-strategy-extension
+
+
+    - name: Restart Jenkins service
+      service:
+        name: jenkins
+        state: restarted

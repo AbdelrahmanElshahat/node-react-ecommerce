@@ -1,0 +1,50 @@
+# ---
+# - name: Enable docker from amazon-linux-extras
+#   command: amazon-linux-extras enable docker
+#   args:
+#     creates: /etc/yum.repos.d/docker.repo
+
+# - name: Install Docker
+#   dnf:
+#     name: docker
+#     state: present
+
+# - name: Start Docker service
+#   service:
+#     name: docker
+#     state: started
+#     enabled: true
+
+# - name: Add ec2-user to docker group
+#   user:
+#     name: ec2-user
+#     groups: docker
+#     append: yes
+- name: Update dnf cache
+  become: true
+  ansible.builtin.dnf:
+    update_cache: yes
+
+- name: Install Docker
+  become: true
+  ansible.builtin.dnf:
+    name: docker
+    state: present
+
+- name: Enable Docker service
+  become: true
+  ansible.builtin.systemd:
+    name: docker
+    enabled: yes
+
+- name: Start Docker service
+  become: true
+  ansible.builtin.systemd:
+    name: docker
+    state: started
+
+
+
+
+
+

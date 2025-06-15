@@ -1,0 +1,23 @@
+---
+    - name: Download Trivy
+      get_url:
+        url: "https://github.com/aquasecurity/trivy/releases/download/v0.40.1/trivy_0.40.1_Linux-64bit.tar.gz"  # Replace with the correct URL
+        dest: /tmp/trivy.tar.gz
+        mode: 0755
+
+    - name: Unpack Trivy
+      unarchive:
+        src: /tmp/trivy.tar.gz
+        dest: /tmp/
+        creates: /tmp/trivy
+
+    - name: Move Trivy Binary
+      file:
+        src: /tmp/trivy
+        dest: /usr/local/bin/trivy
+        state: link
+
+    - name: Make Trivy executable
+      file:
+        path: /usr/local/bin/trivy
+        mode: 0755

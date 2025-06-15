@@ -1,386 +1,226 @@
-# React & Node Tutorial - Full ECommerce in 5 Hours [2020]
 
-Welcome to my React and Node tutorial to build a fully-functional e-commerce website in 5 hours. Open your code editor and follow me for the next hours to build an e-commerce website using React and Node.JS.
+# ITI E-Commerce Platform - Amazona
+
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
+[![Docker](https://img.shields.io/badge/docker-enabled-blue.svg)]()
+[![Kubernetes](https://img.shields.io/badge/kubernetes-ready-326ce5.svg)]()
+[![Terraform](https://img.shields.io/badge/terraform-IaC-623ce4.svg)]()
+[![Ansible](https://img.shields.io/badge/ansible-automation-ee0000.svg)]()
+[![License](https://img.shields.io/badge/license-MIT-green.svg)]()
+
+**Information Technology Institute (ITI) - AWS Restart Track Final Project**
+
+A comprehensive, enterprise-grade e-commerce platform showcasing modern DevOps practices and cloud-native architecture. Built with the MERN stack and deployed using Infrastructure as Code (Terraform), Configuration Management (Ansible), Container Orchestration (Kubernetes), CI/CD automation (Jenkins), and GitOps workflows (ArgoCD).
+
+## DevOps Architecture Overview
+
+This project demonstrates a complete DevOps lifecycle implementation:
+
+- **Infrastructure as Code (IaC)** - Terraform modules for AWS infrastructure provisioning
+- **Configuration Management** - Ansible playbooks for server configuration and software installation
+- **Containerization** - Docker multi-stage builds for optimized application containers
+- **Container Orchestration** - Kubernetes manifests for scalable production deployment
+- **CI/CD Pipeline** - Jenkins declarative pipeline with automated testing and deployment
+- **GitOps** - ArgoCD for declarative, Git-driven continuous deployment
+- **Monitoring & Observability** - AWS CloudWatch integration for comprehensive monitoring
+- **Security** - SSL/TLS automation, secrets management, and security scanning
+
+## Features
+
+### Core E-Commerce Features
+- **User Authentication & Authorization** - JWT-based secure authentication system
+- **Product Catalog Management** - Complete CRUD operations with image upload to AWS S3
+- **Shopping Cart & Checkout** - Real-time cart management with secure payment processing
+- **Order Management System** - Full order lifecycle from placement to fulfillment
+- **User Profile Management** - Account settings, order history, and preferences
+- **Admin Dashboard** - Administrative interface for product and order management
+- **Responsive Design** - Mobile-first UI built with React and Bootstrap
+
+### Technical & DevOps Features
+
+- **Microservices Architecture** - Scalable, containerized service design
+- **RESTful API** - Well-structured backend with Express.js and MongoDB
+- **Cloud Storage Integration** - AWS S3 for file uploads and static assets
+- **Database Management** - MongoDB with Mongoose ODM and persistent storage
+- **SSL/TLS Encryption** - Automated certificate management with cert-manager
+- **Load Balancing** - NGINX ingress controller with traffic distribution
+- **Auto-scaling** - Horizontal Pod Autoscaling based on CPU/memory metrics
+- **Backup & Recovery** - Automated AWS backup strategies for data protection
+
+## Architecture Diagrams
+
+### CI/CD Pipeline Architecture
+![CI/CD Pipeline](./svg/cicd.drawio.svg)
+
+### AWS Infrastructure Overview
+![AWS Infrastructure](./svg/infra_aws.drawio.svg)
+
+### Kubernetes Cluster Topology
+![Kubernetes Architecture](./svg/k8s.drawio.svg)
+
+### Continuous Integration Flow
+![Continuous Integration](./svg/ci.drawio.svg)
+
+### Continuous Deployment Workflow
+![Continuous Deployment](./svg/cd.drawio.svg)
+
+### Complete DevOps Workflow
+![Complete CI/CD Workflow](./svg/Cicd_kh.drawio.svg)
+
+
+## Technology Stack
+
+### Infrastructure & DevOps
+- **Terraform** - Infrastructure as Code for AWS resource provisioning
+- **Ansible** - Configuration management and server automation
+- **Docker** - Application containerization with multi-stage builds
+- **Kubernetes** - Container orchestration and service mesh
+- **Jenkins** - CI/CD pipeline automation with shared libraries
+- **ArgoCD** - GitOps-based continuous deployment
+- **NGINX** - Reverse proxy, load balancer, and ingress controller
+
+### Cloud Services (AWS)
+- **Amazon EKS** - Managed Kubernetes service
+- **Amazon ECR** - Container image registry
+- **Amazon S3** - Object storage for files and backups
+- **Amazon VPC** - Virtual private cloud networking
+- **AWS CloudWatch** - Monitoring, logging, and alerting
+- **AWS Backup** - Automated backup and disaster recovery
+- **Certificate Manager** - SSL/TLS certificate management
+
+### Application Stack (MERN)
+- **React 16.12.0** - Frontend user interface library
+- **Redux** - State management for React applications
+- **Node.js** - JavaScript runtime environment
+- **Express.js** - Web application framework
+- **MongoDB** - NoSQL document database
+- **Mongoose** - MongoDB object document mapper
+
+### Monitoring & Observability
+- **AWS CloudWatch** - Metrics collection, logging, and alerting
+- **AWS X-Ray** - Distributed tracing and performance insights
+- **Trivy** - Container vulnerability scanning
+- **Discord Integration** - Real-time notifications and alerts
 
-## Demo Website
+### Infrastructure Deployment
+
+1. **Provision AWS Infrastructure**
+   ```bash
+   cd Terraform
+   terraform init
+   terraform plan
+   terraform apply
+   ```
 
-👉 Demo : https://oldamazona.webacademy.pro
+2. **Configure Servers with Ansible**
+   ```bash
+   cd Ansible
+   ansible-playbook -i my_inventory.ini roles_playbook.yml
+   ```
 
-## Video Tutorial
+3. **Deploy to Kubernetes**
+   ```bash
+   cd k8s
+   kubectl apply -f namespace.yaml
+   kubectl apply -f .
+   ```
 
-👉 Click on this image to watch full 5-hours video of this tutorial
+4. **Setup GitOps with ArgoCD**
+   ```bash
+   cd argoCD
+   kubectl apply -f application.yaml
+   ```
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/Fy9SdZLBTOo/0.jpg)](https://www.youtube.com/watch?v=Fy9SdZLBTOo)
+### Local Development
 
-## You Will Learn
+1. **Clone and Setup**
+   ```bash
+   git clone <repository-url>
+   cd ITI-Project
+   cp .env.example .env
+   ```
 
-- HTML5 and CSS3: Semantic Elements, CSS Grid, Flexbox
-- React: Components, Props, Events, Hooks, Router, Axios
-- Redux: Store, Reducers, Actions
-- Node & Express: Web API, Body Parser, File Upload, JWT
-- MongoDB: Mongoose, Aggregation
-- Development: ESLint, Babel, Git, Github,
-- Deployment: Heroku
-- Watch React & Node Tutorial
+2. **Start Development Environment**
+   ```bash
+   docker-compose up -d
+   ```
 
-## Run Locally
+3. **Access Applications**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:5000
+   - MongoDB: localhost:27017
 
-### 1. Clone repo
+## Deployment Strategies
 
-```
-$ git clone git@github.com:basir/node-react-ecommerce.git
-$ cd node-react-ecommerce
-```
+### Production Deployment on AWS EKS
 
-### 2. Install MongoDB
+The project supports multiple deployment strategies:
 
-Download it from here: https://docs.mongodb.com/manual/administration/install-community/
+1. **Blue-Green Deployment** - Zero-downtime deployments with traffic switching
+2. **Rolling Updates** - Gradual replacement of application instances
+3. **Canary Releases** - Gradual traffic shifting to new versions
+4. **GitOps Workflow** - Automated deployment triggered by Git commits
 
-### 3. Run Backend
+### Infrastructure Automation
 
-```
-$ npm install
-$ npm start
-```
+- **Terraform Modules** provide reusable infrastructure components
+- **Ansible Roles** automate server configuration and software installation
+- **Jenkins Pipeline** orchestrates the entire CI/CD workflow
+- **ArgoCD** ensures cluster state matches Git repository declarations
 
-### 4. Run Frontend
+## Monitoring & Observability
 
-```
-# open new terminal
-$ cd frontend
-$ npm install
-$ npm start
-```
+### Comprehensive Monitoring Stack
 
-### 5. Create Admin User
+- **Application Performance Monitoring** - Response times, error rates, throughput
+- **Infrastructure Monitoring** - CPU, memory, disk, network metrics
+- **Business Metrics** - User engagement, conversion rates, revenue tracking
+- **Security Monitoring** - Vulnerability scanning, compliance checking
+- **Log Aggregation** - Centralized logging with AWS CloudWatch
 
-- Run this on chrome: http://localhost:5000/api/users/createadmin
-- It returns admin email and password
+### Alerting & Notifications
 
-### 6. Login
+- **AWS CloudWatch Alarms** - Intelligent alert routing and infrastructure monitoring
+- **Discord Webhooks** - Real-time build and deployment notifications
+- **AWS Systems Manager** - Automated operational tasks and notifications
+- **CloudWatch Dashboards** - Visual monitoring and trending
 
-- Run http://localhost:3000/signin
-- Enter admin email and password and click signin
+## Security Implementation
 
-### 7. Create Products
+### Multi-Layer Security Approach
 
-- Run http://localhost:3000/products
-- Click create product and enter product info
+- **Network Security** - VPC isolation, security groups, NACLs
+- **Container Security** - Trivy vulnerability scanning, minimal base images
+- **Secrets Management** - Kubernetes secrets, AWS Systems Manager
+- **SSL/TLS Encryption** - Automated certificate management
+- **Access Control** - RBAC for Kubernetes, IAM for AWS resources
+- **Compliance** - Security best practices and regular auditing
 
-## Deploy to Kubernetes
+## Team
 
-This project includes Kubernetes deployment configuration for cloud deployment.
+This comprehensive DevOps project was developed by a talented team of engineers:
 
-### 1. Deploy the Application
+- **[khaledhawil](https://github.com/khaledhawil)** - DevOps Engineer 
+- **[AbdelrahmanElshahat](https://github.com/AbdelrahmanElshahat)** - DevOps Engineer 
+- **[MennaHamouda](https://github.com/MennaHamouda)** - DevOps Engineer 
+- **[alaaelnagy](https://github.com/alaaelnagy)** - DevOps Engineer 
+- **[saraghonim](https://github.com/saraghonim)** - DevOps Engineer 
 
-```bash
-# Deploy all components
-cd k8s
-./deploy.sh
-```
+## Monitoring & Observability
 
-### 2. Access the Application
+The project includes comprehensive monitoring and observability setup:
 
-After deployment, access the application through:
-- NodePort: `http://<node-ip>:30500/api/products`
-- Ingress: `https://your-domain.com` (if configured)
+### Monitoring Stack
+- **Prometheus** - Metrics collection and alerting
+## Contributing
 
-### 3. Add Products
+We welcome contributions to improve this DevOps demonstration project:
 
-If products are missing after deployment:
-```bash
-cd k8s
-./populate-products.sh
-```
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/enhancement`)
+3. Commit your changes (`git commit -m 'Add new feature'`)
+4. Push to the branch (`git push origin feature/enhancement`)
+5. Open a Pull Request with detailed description
 
-For detailed Kubernetes deployment instructions, see [k8s/README.md](k8s/README.md).
 
-## Support
-
-- Q/A: https://webacademy.pro/oldamazona
-- Contact Instructor: [Basir](mailto:basir.jafarzadeh@gmail.com)
-
-## Video Tutorials
-
-### [00:02:00 Part 01- Introduction](https://www.youtube.com/watch?v=Fy9SdZLBTOo&t=120s)
-
-It gives you an overview of the tutorial to build an eCommerce website like Amazon.
-
-### [00:08:26 Part 02- Install Tools](https://www.youtube.com/watch?v=Fy9SdZLBTOo&t=506s)
-
-You need to install a code editor and a web browser to start web development. In this part, we will prepare the environment to start coding.
-
-### [00:12:36 Part 03- Website Template](https://www.youtube.com/watch?v=Fy9SdZLBTOo&t=756s)
-
-In this part, you create a web template for the eCommerce website.
-![Alt Text](https://dev-to-uploads.s3.amazonaws.com/i/56kqn8m5n1m9fejdoxkz.png)
-
-### [00:29:47 Part 04- Products List](https://www.youtube.com/watch?v=Fy9SdZLBTOo&t=1787s)
-
-We will create a list of products as static HTML elements.
-
-### [00:41:54 Part 05- Create Sidebar](https://www.youtube.com/watch?v=Fy9SdZLBTOo&t=2514s)
-
-We will create a hamburger menu that shows and hide the sidebar. Also, we design the details page of the products.
-![Alt Text](https://dev-to-uploads.s3.amazonaws.com/i/3sceblg6i6790minhaxg.jpg)
-
-### [00:52:39 Part 06- Create React App](https://www.youtube.com/watch?v=Fy9SdZLBTOo&t=3159s)
-
-This part is about the frontend. We use React library to build the UI elements.
-
-### [01:01:09 Part 07- Render Products](https://www.youtube.com/watch?v=Fy9SdZLBTOo&t=3669s)
-
-This is the home page of e-commerce. It shows a list of products.
-![Alt Text](https://dev-to-uploads.s3.amazonaws.com/i/hqiwteg10o8a2cnq0wwi.jpg)
-
-### [01:06:30 Part 08- Product Details](https://www.youtube.com/watch?v=Fy9SdZLBTOo&t=3990s)
-
-When the user clicks on a product there should a page to show details about that product. This lesson is all about making an attractive details page.
-![Alt Text](https://dev-to-uploads.s3.amazonaws.com/i/csskvzbcmz4ypki2xjgk.jpg)
-
-### [01:30:53 Part 09- Create Node Server](https://www.youtube.com/watch?v=Fy9SdZLBTOo&t=5453s)
-
-This part is about Node and Express. They are the popular framework to create a web server using JavaScript language. We will create a MongoDB database and save and retrieve the admin user.
-
-### [01:39:52 Part 10- Fetch Server Data](https://www.youtube.com/watch?v=Fy9SdZLBTOo&t=5992s)
-
-In this lesson, we use React Hooks to fetch data from the server. We use the axios library to do this job in a modern async/await style.
-
-### [01:47:55 Part 11- Manage State With Redux](https://www.youtube.com/watch?v=Fy9SdZLBTOo&t=6475s)
-
-When it comes to handling multiple forms with their data nothing is better than state management. We use Redux in this lesson to handle complex state and keep the app behavior predictable.
-
-### [02:07:11 Part 12- Add Redux To Details](https://www.youtube.com/watch?v=Fy9SdZLBTOo&t=7631s)
-
-In this part, we move the details page state to Redux. First, we create reducers then define actions and connect them to the details component.
-
-### [02:29:23 Part 13- Shopping Cart Screen](https://www.youtube.com/watch?v=Fy9SdZLBTOo&t=8963s)
-
-Shopping Cart is the heart of any e-commerce website. We focus on creating a user-friendly shopping cart using React and Redux.
-![Alt Text](https://dev-to-uploads.s3.amazonaws.com/i/fyzf0no5ej1fgxp5972e.png)
-
-### [03:08:11 Part 14- Connect MongoDB](https://www.youtube.com/watch?v=Fy9SdZLBTOo&t=11291s)
-
-This lesson is about persisting data on the MongoDB database. We use mongoose package to create models and save and retrieve data from the database.
-
-### [03:21:35 Part 15- Sign In User](https://www.youtube.com/watch?v=Fy9SdZLBTOo&t=12095s)
-
-We need to register the user before redirecting them to the checkout. In this part, we will create forms for getting user info and save them in the database.
-![Alt Text](https://dev-to-uploads.s3.amazonaws.com/i/92coj0rezr5508vhfv34.png)
-
-### [03:56:02 Part 16- Manage Products](https://www.youtube.com/watch?v=Fy9SdZLBTOo&t=14162s)
-
-Admin should be able to define products and update the count in stock whenever they like. This page is about managing ECommerce products.
-![Alt Text](https://dev-to-uploads.s3.amazonaws.com/i/154a5zk6vfapukjaxwyu.png)
-
-### [04:38:43 Part 17- Checkout Wizard](https://www.youtube.com/watch?v=Fy9SdZLBTOo&t=16723s)
-
-In this part, we implement the checkout wizard including sign in, shipping info, payment method, and place order.
-![Alt Text](https://dev-to-uploads.s3.amazonaws.com/i/l8w3g9mc3ccijt70wpf3.png)
-
-## Only On Udemy
-
-Following parts are on my udemy course. [Get it by 90% discount](https://www.udemy.com/course/build-ecommerce-website-like-amazon-react-node-mongodb/?couponCode=BASIR1)
-
-### Part 18- Order Details Screen
-
-It shows all details about an order includeing shipping, payments and order items. Also it is possible for admin to manage orders like set them as delivered.
-
-### Part 19- Connect to PayPal
-
-This parts create PaypalButton component to show paypal payment button on the screen.
-when users click on it, they will be redirected to paypal website to make the payment.
-after payment users will be redirected to details page of the order.
-
-### Part 20- Manage Order Screen
-
-This is an admin page to manage list of orders. Admin can delete an order or set it as delivered.
-
-### Part 21- User Profile Screen
-
-When user click on thier name on the header menu, this page appears. It consists of two sections. First an profile update form and second order history.
-
-### Part 22- Filter and Sort Products
-
-In the home page, right after header, there is a filter bar to filter products based on their name and description. also it is possible to sort product based on prices and arrivals.
-
-### Part 23- Deploy Website on Heroku
-
-This section explains all steps to publish the ecommerce website on heroku. first you need to create a cloud mongodb and the make an account on heroku.
-
-### Part 24- Rate and Review Products
-
-This part shows list of reviews by users for each products. also it provides a form to enter rating and review for every single product. also it update the avg rating of each product by user ratings.
-
-1. index.html
-2. link fontawesome
-3. Rating.js
-4. create stars based on props.value
-5. show text based on props.text
-6. index.css
-7. style rating, span color gold and last span to gray, link text to blue
-8. HomeScreen.js
-9. use Rating component
-10. ProductScreen.js
-11. use Rating component, wrap it in anchor#reviews
-12. list reviews after product details
-13. create new review form to get rating and reviews
-14. index.css
-15. style reviews
-16. ProductScreen.js
-17. implement submitHandler
-18. productActions.js
-19. create saveProductReview(productId, review)
-20. productConstants.js
-21. create product review constants
-22. productReducers.js
-23. create productReviewSaveReducer
-24. store.js
-25. add productReviewSaveReducer
-26. backend
-27. productRoute.js
-28. router.post('/:id/reviews')
-29. save review in product.reviews
-30. update avg rating
-
-### Part 25- Upload Product Images On Local Server
-
-Admin shoud be able to uploads photos from their computer. This section is about uploading images on local server ans aws s3 cloud server.
-
-1. npm install multer
-2. routes/uploadRoute.js
-3. import express and multer
-4. create disk storage with Date.now().jpg as filename
-5. set upload as multer({ storage })
-6. router.post('/', upload.single('image'))
-7. return req.file.path
-8. server.js
-9. app.use('/api/uploads',uploadRoute)
-10. ProductsScreen.js
-11. create state hook for uploading
-12. create input image file and onChange handler
-13. define handleUploadImage function
-14. prepare file for upload
-15. axios post file as multipart/form-data
-16. set image and set uploading
-17. check result
-
-### Part 26- Upload Product Images On AWS S3
-
-This section is about uploading images amazon aws s3 cloud server.
-
-1. create aws account
-2. open https://s3.console.aws.amazon.com
-3. create public bucket as amazona
-4. create api key and secret
-5. past it into .env as accessKeyId and secretAccessKey
-6. move dotenv to config.js
-7. add accessKeyId and secretAccessKey to config.js
-8. npm install aws-sdk multer-s3
-9. routes/uploadRoute.js
-10. set aws.config.update to config values
-11. create s3 from new aws.S3()
-12. create storageS3 from multerS3 by setting s3, bucket and acl
-13. set uploadS3 as multer({ storage: storageS3 })
-14. router.post('/s3', uploadS3.single('image'))
-15. return req.file.location
-16. ProductsScreen.js
-17. on handleUploadImage set axios.post('api/uploads/s3')
-18. check result on website and s3
-
-## Kubernetes Deployment
-
-This project includes comprehensive Kubernetes manifest files for production deployment. The Kubernetes setup provides:
-
-- **Scalable Architecture**: Horizontal Pod Autoscaling for backend and frontend
-- **High Availability**: Pod Disruption Budgets and multiple replicas
-- **Security**: Network policies, secrets management, and RBAC
-- **Monitoring**: Prometheus integration and health checks
-- **Load Balancing**: NGINX Ingress and internal load balancing
-
-### Quick Start with Kubernetes
-
-#### Development (using Minikube)
-```bash
-# Set up development environment
-cd k8s
-make dev
-```
-
-#### Production Deployment
-```bash
-# Build and deploy to production
-cd k8s
-make prod-deploy
-```
-
-#### Using Scripts Directly
-```bash
-# Deploy the application
-./k8s/deploy.sh --build --with-scaling
-
-# Check application health
-./k8s/health-check.sh
-
-# Clean up resources
-./k8s/cleanup.sh
-```
-
-### Kubernetes Files Structure
-
-```
-k8s/
-├── namespace.yaml           # Application namespace
-├── configmap-secret.yaml   # Configuration and secrets
-├── mongodb.yaml            # MongoDB database
-├── backend.yaml            # Node.js API server
-├── frontend.yaml           # React frontend
-├── ingress.yaml            # External access configuration
-├── hpa.yaml                # Horizontal Pod Autoscaler
-├── pdb.yaml                # Pod Disruption Budgets
-├── network-policy.yaml     # Network security policies
-├── nginx-proxy.yaml        # NGINX reverse proxy
-├── monitoring.yaml         # Prometheus monitoring
-├── deploy.sh               # Automated deployment script
-├── cleanup.sh              # Resource cleanup script
-├── health-check.sh         # Health monitoring script
-├── dev-setup.sh            # Development environment setup
-├── Makefile                # Build and deployment automation
-└── README.md               # Detailed deployment guide
-```
-
-### Available Make Commands
-
-```bash
-make help                   # Show all available commands
-make build                  # Build Docker images
-make deploy                 # Deploy to Kubernetes
-make dev                    # Set up development environment
-make health                 # Run health checks
-make clean                  # Clean up all resources
-make logs-backend           # View backend logs
-make port-forward-frontend  # Access frontend locally
-make scale-backend REPLICAS=5  # Scale backend pods
-```
-
-### Environment Configuration
-
-Before deployment, update the following in `k8s/configmap-secret.yaml`:
-
-1. **AWS Credentials**: Replace base64 encoded AWS access keys
-2. **MongoDB Credentials**: Update if using different credentials
-3. **Domain Name**: Update `ecommerce.local` in `ingress.yaml`
-
-### Accessing the Application
-
-After deployment:
-- **Local Development**: http://ecommerce.local (with minikube)
-- **Production**: Configure your domain in ingress.yaml
-- **Port Forwarding**: `make port-forward-frontend`
-
-For detailed Kubernetes deployment instructions, see `k8s/README.md`.
-
-## Summary
-
-In this tutorial, we have made an eCommerce website like Amazon. Feel free to change this project based on your needs and add it to your portfolio.
-Also, I will love to hear your comment about this React and Node tutorial. Please share your thoughts here.
+**ITI Project 2025** - Demonstrating enterprise-grade DevOps practices for modern cloud-native applications.
