@@ -34,9 +34,9 @@ package-lock.json
 yarn-lock.json
 frontend/package-lock.json
 frontend/yarn-lock.json
-k8s/*.sh
-k8s/monitoring.yaml
-k8s/seed-products-job.yaml
-k8s/fix-*.yaml
-deployment/*
-docs/*
+/k8s/*.sh
+/k8s/monitoring.yaml
+/k8s/seed-products-job.yaml
+/k8s/fix-*.yaml
+/deployment/*
+/docs/*
