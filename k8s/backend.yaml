@@ -19,7 +19,7 @@ spec:
       - name: dockerhub-secret
       containers:
       - name: backend
-        image: elshahat20/my-app:itiBack-1.0.2
+        image: elshahat20/my-app:itiBack-1.0.3
         ports:
         - containerPort: 5000
         env:
