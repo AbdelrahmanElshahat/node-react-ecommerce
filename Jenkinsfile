@@ -93,14 +93,6 @@ pipeline{
                 }
             }
         }
-        stage("docker Login"){
-            steps{
-                echo "========executing docker login stage========"
-                script {
-                    dockerLogin()
-                }
-            }
-        }
         stage("Trivy Scan Frontend"){
             when {
                 anyOf {
@@ -113,15 +105,31 @@ pipeline{
                     dir('frontend') {
                         def version = getVersionFromPackageJson()
                         sh """
-                            # Install Trivy if not already installed (Amazon Linux)
+                            # Install Trivy for Docker container environment
                             if ! command -v trivy &> /dev/null; then
-                                echo "Installing Trivy on Amazon Linux..."
-                                sudo rpm -ivh https://github.com/aquasecurity/trivy/releases/download/v0.48.3/trivy_0.48.3_Linux-64bit.rpm
+                                echo "Installing Trivy binary in Jenkins Docker container..."
+                                # Create temp directory for trivy
+                                mkdir -p /tmp/trivy
+                                cd /tmp/trivy
+                                
+                                # Download and extract Trivy binary
+                                wget -q https://github.com/aquasecurity/trivy/releases/download/v0.48.3/trivy_0.48.3_Linux-64bit.tar.gz
+                                tar xzf trivy_0.48.3_Linux-64bit.tar.gz
+                                chmod +x trivy
+                                
+                                # Add to PATH for this session
+                                export PATH=/tmp/trivy:\$PATH
+                                echo "Trivy installed successfully"
+                                /tmp/trivy/trivy version
                             fi
                             
+                            # Use trivy from PATH or fallback to temp location
+                            TRIVY_PATH=\$(command -v trivy || echo "/tmp/trivy/trivy")
+                            echo "Using Trivy from: \$TRIVY_PATH"
+                            
                             # Scan the frontend image
-                            trivy image --exit-code 0 --severity LOW,MEDIUM --format table public.ecr.aws/w2s7s2g7/iti-project-frontend:${version}
-                            trivy image --exit-code 1 --severity HIGH,CRITICAL --format table public.ecr.aws/w2s7s2g7/iti-project-frontend:${version}
+                            \$TRIVY_PATH image --exit-code 0 --severity LOW,MEDIUM --format table public.ecr.aws/w2s7s2g7/iti-project-frontend:${version}
+                            \$TRIVY_PATH image --exit-code 1 --severity HIGH,CRITICAL --format table public.ecr.aws/w2s7s2g7/iti-project-frontend:${version}
                         """
                     }
                 }
@@ -139,15 +147,31 @@ pipeline{
                     dir('backend') {
                         def version = getVersionFromPackageJson()
                         sh """
-                            # Install Trivy if not already installed (Amazon Linux)
+                            # Install Trivy for Docker container environment
                             if ! command -v trivy &> /dev/null; then
-                                echo "Installing Trivy on Amazon Linux..."
-                                sudo rpm -ivh https://github.com/aquasecurity/trivy/releases/download/v0.48.3/trivy_0.48.3_Linux-64bit.rpm
+                                echo "Installing Trivy binary in Jenkins Docker container..."
+                                # Create temp directory for trivy
+                                mkdir -p /tmp/trivy
+                                cd /tmp/trivy
+                                
+                                # Download and extract Trivy binary
+                                wget -q https://github.com/aquasecurity/trivy/releases/download/v0.48.3/trivy_0.48.3_Linux-64bit.tar.gz
+                                tar xzf trivy_0.48.3_Linux-64bit.tar.gz
+                                chmod +x trivy
+                                
+                                # Add to PATH for this session
+                                export PATH=/tmp/trivy:\$PATH
+                                echo "Trivy installed successfully"
+                                /tmp/trivy/trivy version
                             fi
                             
+                            # Use trivy from PATH or fallback to temp location
+                            TRIVY_PATH=\$(command -v trivy || echo "/tmp/trivy/trivy")
+                            echo "Using Trivy from: \$TRIVY_PATH"
+                            
                             # Scan the backend image
-                            trivy image --exit-code 0 --severity LOW,MEDIUM --format table public.ecr.aws/w2s7s2g7/iti-project-backend:${version}
-                            trivy image --exit-code 1 --severity HIGH,CRITICAL --format table public.ecr.aws/w2s7s2g7/iti-project-backend:${version}
+                            \$TRIVY_PATH image --exit-code 0 --severity LOW,MEDIUM --format table public.ecr.aws/w2s7s2g7/iti-project-backend:${version}
+                            \$TRIVY_PATH image --exit-code 1 --severity HIGH,CRITICAL --format table public.ecr.aws/w2s7s2g7/iti-project-backend:${version}
                         """
                     }
                 }
