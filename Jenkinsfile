@@ -69,7 +69,7 @@ pipeline{
                 script {
                     dir('backend'){
                     def version = getVersionFromPackageJson()
-                    buildImage "elshahat20/my-app:itiBack-${version}"
+                    buildImage "public.ecr.aws/w2s7s2g7/iti-project-backend:${version}"
                     }
                 }
             }
@@ -88,7 +88,7 @@ pipeline{
                 script {
                     dir('frontend') {
                         def version = getVersionFromPackageJson()
-                        buildImage "elshahat20/my-app:itiFront-${version}"
+                        buildImage "public.ecr.aws/w2s7s2g7/iti-project-frontend:${version}"
                     }
                 }
             }
@@ -98,6 +98,58 @@ pipeline{
                 echo "========executing docker login stage========"
                 script {
                     dockerLogin()
+                }
+            }
+        }
+        stage("Trivy Scan Frontend"){
+            when {
+                anyOf {
+                    environment name: 'BUILD_FRONTEND', value: 'true'
+                }
+            }
+            steps{
+                echo "========executing Trivy scan frontend image stage========"
+                script {
+                    dir('frontend') {
+                        def version = getVersionFromPackageJson()
+                        sh """
+                            # Install Trivy if not already installed (Amazon Linux)
+                            if ! command -v trivy &> /dev/null; then
+                                echo "Installing Trivy on Amazon Linux..."
+                                sudo rpm -ivh https://github.com/aquasecurity/trivy/releases/download/v0.48.3/trivy_0.48.3_Linux-64bit.rpm
+                            fi
+                            
+                            # Scan the frontend image
+                            trivy image --exit-code 0 --severity LOW,MEDIUM --format table public.ecr.aws/w2s7s2g7/iti-project-frontend:${version}
+                            trivy image --exit-code 1 --severity HIGH,CRITICAL --format table public.ecr.aws/w2s7s2g7/iti-project-frontend:${version}
+                        """
+                    }
+                }
+            }
+        }
+        stage("Trivy Scan Backend"){
+            when {
+                anyOf {
+                    environment name: 'BUILD_BACKEND', value: 'true'
+                }
+            }
+            steps{
+                echo "========executing Trivy scan backend image stage========"
+                script {
+                    dir('backend') {
+                        def version = getVersionFromPackageJson()
+                        sh """
+                            # Install Trivy if not already installed (Amazon Linux)
+                            if ! command -v trivy &> /dev/null; then
+                                echo "Installing Trivy on Amazon Linux..."
+                                sudo rpm -ivh https://github.com/aquasecurity/trivy/releases/download/v0.48.3/trivy_0.48.3_Linux-64bit.rpm
+                            fi
+                            
+                            # Scan the backend image
+                            trivy image --exit-code 0 --severity LOW,MEDIUM --format table public.ecr.aws/w2s7s2g7/iti-project-backend:${version}
+                            trivy image --exit-code 1 --severity HIGH,CRITICAL --format table public.ecr.aws/w2s7s2g7/iti-project-backend:${version}
+                        """
+                    }
                 }
             }
         }
@@ -112,7 +164,7 @@ pipeline{
                 script {
                     dir('frontend') {
                     def version = getVersionFromPackageJson()
-                    dockerPush "elshahat20/my-app:itiFront-${version}"
+                    dockerPush "public.ecr.aws/w2s7s2g7/iti-project-frontend:${version}"
                     }
                 }
             }
@@ -128,7 +180,7 @@ pipeline{
                 script {
                     dir('backend') {
                     def version = getVersionFromPackageJson()
-                    dockerPush "elshahat20/my-app:itiBack-${version}"
+                    dockerPush "public.ecr.aws/w2s7s2g7/iti-project-backend:${version}"
                     }
                 }
             }
@@ -148,7 +200,7 @@ pipeline{
                     }
                     dir('k8s') {
                         sh """
-                            sed -i 's|image: elshahat20/my-app:itiBack-.*|image: elshahat20/my-app:itiBack-${version}|' backend.yaml
+                            sed -i 's|image: public.ecr.aws/w2s7s2g7/iti-project-backend:.*|image: public.ecr.aws/w2s7s2g7/iti-project-backend:${version}|' backend.yaml
                         """
                     }
                 }
@@ -169,7 +221,7 @@ pipeline{
                     }
                     dir('k8s') {
                         sh """
-                            sed -i 's|image: elshahat20/my-app:itiFront-.*|image: elshahat20/my-app:itiFront-${version}|' frontend.yaml
+                            sed -i 's|image: public.ecr.aws/w2s7s2g7/iti-project-frontend:.*|image: public.ecr.aws/w2s7s2g7/iti-project-frontend:${version}|' frontend.yaml
                         """
                     }
                 }
