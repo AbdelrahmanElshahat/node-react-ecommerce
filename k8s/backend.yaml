@@ -15,11 +15,9 @@ spec:
       labels:
         app: backend
     spec:
-      imagePullSecrets:
-      - name: dockerhub-secret
       containers:
       - name: backend
-        image: elshahat20/my-app:backlastest
+        image: elshahat20/my-app:itiBack-1.0.4
         ports:
         - containerPort: 5000
         env:

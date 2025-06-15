@@ -54,14 +54,6 @@ pipeline{
                 }
             }
         }
-        stage("push version"){
-            steps{
-                echo "========executing push version stage========"
-                script {
-                    pushVersionToGit()
-                }
-            }
-        }
         stage("build backend image"){
             when {
                 anyOf {
@@ -177,6 +169,14 @@ pipeline{
                             sed -i 's|image: elshahat20/my-app:itiFront-.*|image: elshahat20/my-app:itiFront-${version}|' frontend-deployment.yaml
                         """
                     }
+                }
+            }
+        }
+         stage("push version"){
+            steps{
+                echo "========executing push version stage========"
+                script {
+                    pushVersionToGit()
                 }
             }
         }
