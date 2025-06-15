@@ -7,7 +7,9 @@ library 'identifier' : 'jenkins-shared-library@master','retriever': modernSCM(
     ]
 )
 pipeline{
-    agent any 
+    agent { 
+        label 'master'
+    } 
     tools {
         nodejs 'my-nodejs'
     }
