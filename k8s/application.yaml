@@ -13,6 +13,13 @@ spec:
     repoURL: https://github.com/AbdelrahmanElshahat/node-react-ecommerce.git
     targetRevision: main
     path: k8s
+    directory:
+      exclude: |
+        ip-access-ingress.yaml
+        argocd-ingress.yaml
+        backend-nodeport.yaml
+        **/test-*.yaml
+        **/fix-*.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: ecommerce
@@ -25,6 +32,8 @@ spec:
       - CreateNamespace=true
       - PrunePropagationPolicy=foreground
       - PruneLast=true
+      - RespectIgnoreDifferences=true
+      - ApplyOutOfSyncOnly=true
     retry:
       limit: 5
       backoff:
@@ -32,3 +41,22 @@ spec:
         factor: 2
         maxDuration: 3m
   revisionHistoryLimit: 10
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
+    - group: ""
+      kind: Service
+      jsonPointers:
+        - /spec/clusterIP
+    - group: networking.k8s.io
+      kind: Ingress
+      jsonPointers:
+        - /status
+  # Health check configuration
+  info:
+    - name: 'Example'
+      value: 'https://example.com'
+    - name: 'Repository'
+      value: 'https://github.com/AbdelrahmanElshahat/node-react-ecommerce'

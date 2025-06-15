@@ -60,33 +60,6 @@ spec:
             name: frontend-service
             port:
               number: 80
-  # Add a rule for IP-based access (no host specified)
-  - http:
-      paths:
-      # API routes - must come first for proper matching
-      - path: /api
-        pathType: Prefix
-        backend:
-          service:
-            name: backend-service
-            port:
-              number: 5000
-      # Static uploads path
-      - path: /uploads
-        pathType: Prefix
-        backend:
-          service:
-            name: backend-service
-            port:
-              number: 5000
-      # Frontend routes - catch-all for SPA routing
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: frontend-service
-            port:
-              number: 80
   # TLS/SSL configuration with Let's Encrypt
   tls:
   - hosts:
