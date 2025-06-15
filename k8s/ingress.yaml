@@ -4,32 +4,16 @@ metadata:
   name: ecommerce-ingress
   namespace: ecommerce
   annotations:
-    # DigitalOcean Load Balancer annotations
+    # Basic ingress configuration
     kubernetes.io/ingress.class: "nginx"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/proxy-body-size: "50m"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
     
-    # Enable CORS for API calls
+    # CORS configuration
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-origin: "*"
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
     nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
-    
-    # Security and performance
-    nginx.ingress.kubernetes.io/proxy-buffering: "on"
-    nginx.ingress.kubernetes.io/proxy-buffer-size: "8k"
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    # Add configuration to handle both domain and IP access
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      if ($host = 'amazona.com') {
-        set $redirect_to_https "true";
-      }
-      if ($redirect_to_https = 'true') {
-        return 301 https://$host$request_uri;
-      }
 spec:
   ingressClassName: nginx
   rules:
@@ -60,8 +44,30 @@ spec:
             name: frontend-service
             port:
               number: 80
-  # TLS/SSL configuration with Let's Encrypt
-  tls:
-  - hosts:
-    - amazona.com
-    secretName: ecommerce-tls-secret
+  # Default rule for IP-based access (no host specified)
+  - http:
+      paths:
+      # API routes - must come first for proper matching
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 5000
+      # Static uploads path
+      - path: /uploads
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 5000
+      # Frontend routes - catch-all for SPA routing
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service
+            port:
+              number: 80

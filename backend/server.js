@@ -22,8 +22,30 @@ mongoose
   .catch((error) => console.log('mongodb connection error:', error.message));
 
 const app = express();
-app.use(cors());
+
+// Enhanced CORS configuration for both domain and IP access
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    // Allow any origin for development/testing
+    // In production, you might want to be more restrictive
+    return callback(null, true);
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
+
+// Add request logging for debugging
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url} - Host: ${req.get('host')}`);
+  next();
+});
 
 // Health check endpoint for Kubernetes
 app.get('/api/health', (req, res) => {
@@ -32,6 +54,20 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// Simple test endpoint for debugging
+app.get('/api/test', (req, res) => {
+  res.status(200).json({
+    message: 'API is working!',
+    host: req.get('host'),
+    ip: req.ip,
+    headers: {
+      'user-agent': req.get('user-agent'),
+      'x-forwarded-for': req.get('x-forwarded-for'),
+      'x-real-ip': req.get('x-real-ip')
+    }
   });
 });
 
@@ -44,6 +80,21 @@ app.get('/api/config/paypal', (req, res) => {
 });
 app.use('/uploads', express.static('uploads'));
 app.use(express.static(path.join(__dirname, '/../frontend/build')));
+
+// Error handling middleware
+app.use((error, req, res, next) => {
+  console.error('Error occurred:', error);
+  res.status(error.status || 500).json({
+    message: error.message,
+    error: process.env.NODE_ENV === 'production' ? {} : error
+  });
+});
+
+// 404 handler for API routes
+app.use('/api/*', (req, res) => {
+  res.status(404).json({ message: 'API endpoint not found' });
+});
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(`${__dirname}/../frontend/build/index.html`));
 });
