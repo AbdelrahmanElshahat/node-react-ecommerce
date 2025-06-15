@@ -141,7 +141,7 @@ pipeline{
                     }
                     dir('k8s') {
                         sh """
-                            sed -i 's|image: elshahat20/my-app:itiBack-.*|image: elshahat20/my-app:itiBack-${version}|' backend-deployment.yaml
+                            sed -i 's|image: elshahat20/my-app:itiBack-.*|image: elshahat20/my-app:itiBack-${version}|' backend.yaml
                         """
                     }
                 }
@@ -162,7 +162,7 @@ pipeline{
                     }
                     dir('k8s') {
                         sh """
-                            sed -i 's|image: elshahat20/my-app:itiFront-.*|image: elshahat20/my-app:itiFront-${version}|' frontend-deployment.yaml
+                            sed -i 's|image: elshahat20/my-app:itiFront-.*|image: elshahat20/my-app:itiFront-${version}|' frontend.yaml
                         """
                     }
                 }
